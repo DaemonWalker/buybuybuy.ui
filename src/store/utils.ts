@@ -1,4 +1,6 @@
 import store from "."
+import { ActivityModel } from "../models/activity"
+import { LoginInfo } from "../models/loginInfo"
 const setSidebarCollapsed = (collapsed: boolean) => {
     store.dispatch({
         type: "SIDEBAR_SET",
@@ -12,4 +14,25 @@ const opSidebarCollapsed = () => {
         payload: true,
     })
 }
-export { setSidebarCollapsed, opSidebarCollapsed };
+
+const login = (info: LoginInfo) => {
+    store.dispatch({
+        type: "LOGIN",
+        payload: info
+    });
+}
+const logout = () => {
+    store.dispatch({
+        type: "LOGOUT",
+        payload: new LoginInfo()
+    });
+}
+
+const setActivity = (act: ActivityModel) => {
+    store.dispatch({
+        type: "ACTIVITY_SET",
+        payload: act
+    });
+}
+
+export { setSidebarCollapsed, opSidebarCollapsed, logout, login, setActivity };

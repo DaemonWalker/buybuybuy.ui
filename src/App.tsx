@@ -1,16 +1,25 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Layout, Menu } from 'antd';
 import { Sidebar } from './components/sidebar';
 import { useStore } from 'react-redux';
 import { appSelector, RootState } from './store';
 import { Activity } from './pages/activity'
-import { Route, Routes } from "react-router"
+import { Route, Routes, useNavigate } from "react-router-dom"
+import { MyBought } from "./pages/myBought"
 
 
 const { Header, Content, Footer, Sider } = Layout;
 
 function App() {
     const collapsed = appSelector(s => s.sidebarCollapsed);
+    const login = appSelector(s => s.logStatus.isLogin);
+    const navigate = useNavigate();
+    useEffect(() => {
+        console.log(login);
+        if (!login) {
+            navigate("/login")
+        }
+    }, [login])
     return (
         <Layout>
             <Sidebar />
@@ -18,13 +27,14 @@ function App() {
                 <Content style={{ margin: '24px 16px 0', overflow: 'initial' }}>
                     <div className="site-layout-background" style={{ padding: 24, textAlign: 'center' }}>
                         <Routes>
+                            <Route path="/bought" element={<MyBought />}></Route>
                             <Route path="/" element={<Activity />}></Route>
                         </Routes>
                     </div>
                 </Content>
                 <Footer style={{ textAlign: 'center' }}>Ant Design ©2018 Created by Ant UED</Footer>
             </Layout>
-        </Layout>
+        </Layout >
     )
 }
 

@@ -4,7 +4,6 @@ export interface SidebarCollapsedAction {
 }
 
 export const sidebarCollapsed = (state: boolean | undefined, action: SidebarCollapsedAction): boolean => {
-    console.log(state, action)
     if (state === undefined) {
         return true;
     }
@@ -13,5 +12,7 @@ export const sidebarCollapsed = (state: boolean | undefined, action: SidebarColl
             return !state;
         case "SIDEBAR_SET":
             return action.payload;
+        default:
+            return state;
     }
 };
