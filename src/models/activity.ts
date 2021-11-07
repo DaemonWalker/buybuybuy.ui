@@ -4,4 +4,5 @@ export interface ActivityModel {
     start: string,
     end: string,
     isStart: boolean,
+    startDate: Date,
 }

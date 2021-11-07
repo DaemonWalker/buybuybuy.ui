@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
 import { Card, Button, Row, Typography, Col, message } from 'antd';
 import { EditOutlined, EllipsisOutlined, SettingOutlined } from '@ant-design/icons';
 import img from "../img/4.jpg"
@@ -6,52 +6,42 @@ import { ItemModel } from "../models/itemModel"
 import { itemApi } from "../utils/apiUtil"
 import { appSelector } from '../store';
 import { BuyModel } from '../models/buy';
+import { buyItemMessage } from '../utils/messageUtil'
 
 const { Meta } = Card;
 const { Title, Text } = Typography;
 
 interface Props {
     item: ItemModel;
-    activityStarted: boolean,
 }
 
-export const ItemSummary: FC<Props> = ({ item, activityStarted }) => {
-    const [loading, setLoading] = useState(false);
+export const ItemSummary: FC<Props> = ({ item }) => {
     const activity = appSelector(s => s.activity);
     const [buying, setBuying] = useState(false);
-    const [disable, setDisable] = useState(activityStarted);
+    const activityStarted = appSelector(s => s.activity.isStart);
+    const [disable, setDisable] = useState(!activityStarted);
+    const [buttonText, setButtonText] = useState("");
+    useEffect(() => {
+        if (activityStarted) {
+            setButtonText("买买买");
+            setDisable(!activityStarted);
+        }
+        else {
+            setButtonText("还未到抢购时间")
+            setDisable(!activityStarted);
+        }
+    }, [activityStarted]);
     const buyItem = () => {
         setBuying(true);
         const buy: BuyModel = { activityId: activity.id, itemId: item.itemId, quantity: 1, }
         itemApi.buyItem(buy).then(res => {
             setDisable(true);
             setBuying(false);
-            if (res === "抢购成功") {
-                message.success(`成功抢到${item.name}`);
-            }
-            else if (res === "您已经买过了") {
-                message.error(`您已经买过${item.name}了`)
-            }
-            else if (res === "运气不好，已经被抢光了") {
-                message.error(`运气不好，${item.name}已经被抢光了`)
-            }
-            else if (res === "购买数量超过个人单品上限，已为您自动抢购了剩余商品") {
-                message.warn(`购买${item.name}超过个人单品上限，已为您自动抢购了剩余商品`)
-            }
-            else if (res === "库存不足，以为您抢到了最大数量") {
-                message.warn(`${item.name}库存不足，以为您抢到了最大数量`)
-            }
-            else {
-                message.error("服务器错误")
-                setDisable(false);
-            }
+            buyItemMessage(res, item.name, () => setDisable(false));
         })
     }
     return (
-        <Card
-            hoverable
-            cover={<img alt="example" src={item.url} />}
-        >
+        <Card hoverable={!disable} cover={<img alt="example" src={item.url} />}>
             <Row align="middle">
                 <Col>
                     <Title level={3} type="danger">{`￥${item.price}`}</Title>
@@ -60,10 +50,16 @@ export const ItemSummary: FC<Props> = ({ item, activityStarted }) => {
                     <Text style={{ float: "right" }}>{item.name}</Text>
                 </Col>
             </Row>
-            <Row>
+            <Row justify="center" align="middle">
+                <Col>
+                    <Text>{`共${item.inventory}件 限购${item.userLimit}件`}</Text>
+                </Col>
                 <Col flex="auto">
                     <Button type="default" style={{ float: "right" }}
-                        onClick={() => buyItem()} loading={buying} disabled={disable}>买买买</Button>
+                        onClick={(e) => { buyItem(); e.preventDefault(); }}
+                        loading={buying} disabled={disable}>
+                        {buttonText}
+                    </Button>
                 </Col>
             </Row>
 

@@ -4,54 +4,46 @@ import { BoughtModel } from "../models/bought";
 import { activityApi, adminApi, userApi } from "../utils/apiUtil"
 import { BoughtList } from "../components/boughtList"
 import { ActivityModel } from "../models/activity";
+import { SelectOptionModel } from "../models/selectOption";
+import { ActivitySelector } from "../components/selectors/activitySelector";
+import { UserSelector } from "../components/selectors/useSelector";
 
-const { Title, Paragraph, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
 
 export const AllBought: FC = () => {
-    const [data, setData] = useState<BoughtModel[]>([]);
-    const [loading, setLoading] = useState(true);
+
     const [actId, setActId] = useState(-1);
-    const [searchText, setSearchText] = useState("");
-    const [acts, setActs] = useState<{ label: string, key: string, value: string }[]>([]);
-    const txtSearch = useRef<Input>(null);
-    useEffect(() => {
-        if (actId === -1) {
-            return;
+    const [searchItemName, setSearchItemName] = useState("");
+    const [searchUser, setSearchUser] = useState<string>();
+    const filter = (bought: BoughtModel): boolean => {
+        var result = true;
+        if (searchItemName) {
+            result = result && bought.item.name.indexOf(searchItemName) >= 0;
         }
-        adminApi.getAllBought(actId).then(res => {
-            setData(res);
-            setLoading(false);
-            setSearchText("");
-            console.log(txtSearch.current);
-            txtSearch.current?.setValue("");
-        });
-    }, [actId])
-    useEffect(() => {
-        activityApi.getAllActivities().then(res => {
-            const options = res.map(
-                item => ({
-                    label: `${item.name} ${item.start}~${item.end}`,
-                    key: item.id.toString(),
-                    value: item.id.toString()
-                })
-            )
-            setActs(options);
-        })
-    }, []);
+        if (result && searchUser) {
+            result = result && (searchUser === bought.user.id);
+        }
+        return result;
+    }
+
+    const txtSearch = useRef<Input>(null);
+
+
+
     return (
         <div style={{ width: "100%" }}>
             <Row gutter={[0, 20]} justify="end" align="bottom">
                 <Col>
-                    <Search placeholder="输入物品名进行搜索" onSearch={e => setSearchText(e)}
+                    <Search placeholder="输入物品名进行搜索" onSearch={e => setSearchItemName(e)}
                         ref={txtSearch} style={{ width: 300 }} />
                 </Col>
                 <Col flex="auto">
                     <Space size="middle" style={{ float: "right" }}>
-                        <span>请选择秒杀活动</span>
-                        <Select onChange={e => setActId(parseInt(e?.toString() ?? "-1"))}
-                            options={acts} style={{ width: 480, }}></Select>
+                        <span>活动</span>
+                        <ActivitySelector onChange={e => setActId(parseInt(e ?? "-1"))} />
+                        <span>人员</span>
+                        <UserSelector onChange={e => setSearchUser(e)}></UserSelector>
                     </Space>
                 </Col>
             </Row>
@@ -59,7 +51,7 @@ export const AllBought: FC = () => {
                 actId !== -1 &&
                 <Row>
                     <Col span={24}>
-                        <BoughtList data={data} loading={loading} isAdmin={true} filter={searchText}></BoughtList>
+                        <BoughtList activityId={actId} showUserInfo filterFunc={filter} />
                     </Col>
                 </Row>
             }

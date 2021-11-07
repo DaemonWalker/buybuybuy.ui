@@ -1,11 +1,15 @@
 import React, { FC } from "react";
 import { AppDispatch, appSelector, RootState } from "../store";
 import { Layout, Menu } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined, UploadOutlined, VideoCameraOutlined, } from '@ant-design/icons';
+import {
+    MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined,
+    LogoutOutlined, ClockCircleOutlined, HistoryOutlined
+} from '@ant-design/icons';
 import { useDispatch, useStore } from "react-redux";
 import { opSidebarCollapsed } from '../store/utils'
 import { CollapaseButton } from './collapaseButton'
 import { useNavigate } from "react-router-dom"
+import { logout } from "../store/utils"
 
 import '../App.css'
 
@@ -33,18 +37,21 @@ export const Sidebar: FC = () => {
             </Menu>
 
             <Menu theme="dark" mode="inline" defaultSelectedKeys={['4']} style={{ background: "#005bac" }}>
-                <Menu.Item key="2" icon={<VideoCameraOutlined />} onClick={() => navigate("/")}>
+                <Menu.Item key="2" icon={<ClockCircleOutlined />} onClick={() => navigate("/")}>
                     秒杀活动
                 </Menu.Item>
                 <Menu.Item key="1" icon={<UserOutlined />} onClick={() => navigate("/bought")}>
                     购买记录
                 </Menu.Item>
                 {
-                    role === "管理员" &&
-                    <Menu.Item key="3" icon={<UserOutlined />} onClick={() => navigate("/bought")}>
+                    role === "admin" &&
+                    <Menu.Item key="3" icon={<HistoryOutlined />} onClick={() => navigate("/allBought")}>
                         所有购买记录
                     </Menu.Item>
                 }
+                <Menu.Item icon={<LogoutOutlined />} onClick={() => logout()}>
+                    登出
+                </Menu.Item>
             </Menu>
         </Sider>
     )

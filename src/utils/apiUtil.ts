@@ -6,6 +6,7 @@ import { BuyModel } from "../models/buy";
 import { OpenIdCallBack } from "../models/openIdCallBack";
 import { logout } from "../store/utils";
 import { LoginInfoCache } from "./cacheUtil";
+import { SelectOptionModel } from '../models/selectOption'
 
 
 const openIdCallback = (openIdInfo: OpenIdCallBack): Promise<LoginInfo> => {
@@ -56,11 +57,15 @@ const getAllActivities = (): Promise<ActivityModel[]> => {
     return get("/api/activity/GetAllActivities").then(res => res.json()).then(res => res as ActivityModel[]);
 }
 
+const getAllUser = (): Promise<SelectOptionModel[]> => {
+    return get("/api/Admin/GetAllUser").then(res => res.json()).then(res => res as SelectOptionModel[]);
+}
+
 export const tokenApi = { getLoginPage, openIdCallback, refreshToken };
 export const activityApi = { getLiveActivity, getActivityItems, getAllActivities };
 export const itemApi = { buyItem };
 export const userApi = { getMyBought }
-export const adminApi = { getAllBought }
+export const adminApi = { getAllBought, getAllUser }
 
 
 const checkResponseOk = (res: Response): Promise<boolean> => {

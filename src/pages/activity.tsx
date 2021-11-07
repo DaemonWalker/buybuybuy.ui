@@ -1,10 +1,12 @@
 import { FC, ReactComponentElement, useEffect } from "react";
 import { ActivityCarousel } from "../components/activityCarousel";
 import { ActivityItems } from "../components/activityItems"
+import { ActivityTimer } from "../components/activityTimer"
 import { activityApi } from "../utils/apiUtil"
 import { setActivity } from "../store/utils"
 import { appSelector } from "../store";
 import { Loading } from "../components/loading"
+import { Col, Row, Space } from "antd";
 
 export const Activity: FC = () => {
     let sense: FC;
@@ -12,17 +14,19 @@ export const Activity: FC = () => {
     useEffect(() => {
         activityApi.getLiveActivity().then(res => setActivity(res));
     }, [])
-    // useEffect(() => {
-    //     if (actId == -1) {
-    //         sense = () => (<>meiyouqianggou</>);
-    //     }
-    // }, [actId])
 
     const dataSense = (
-        <>
-            <ActivityCarousel></ActivityCarousel>
-            <ActivityItems actId={actId}></ActivityItems>
-        </>
+        <Row gutter={[0, 20]} justify="center" align="middle">
+            <Col span={24}>
+                <ActivityCarousel></ActivityCarousel>
+            </Col>
+            <Col>
+                <ActivityTimer></ActivityTimer>
+            </Col>
+            <Col>
+                <ActivityItems actId={actId}></ActivityItems>
+            </Col >
+        </Row >
     )
 
     const loadingSense = (<Loading></Loading>)

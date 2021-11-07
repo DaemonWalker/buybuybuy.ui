@@ -7,8 +7,16 @@ export interface ActivityAction {
 
 export default (state: ActivityModel | undefined, action: ActivityAction): ActivityModel => {
     if (!state) {
-        return { id: 0, name: '', start: '', end: '', isStart: false };
+        return {
+            id: 0,
+            name: '',
+            start: '',
+            end: '',
+            isStart: false,
+            startDate: new Date(Date.parse("2000-1-1"))
+        };
     }
+
     switch (action.type) {
         case "ACTIVITY_SET":
             return { ...action.payload };
