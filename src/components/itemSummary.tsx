@@ -6,7 +6,6 @@ import { ItemModel } from "../models/itemModel"
 import { itemApi } from "../utils/apiUtil"
 import { appSelector } from '../store';
 import { BuyModel } from '../models/buy';
-import { buyItemMessage } from '../utils/messageUtil'
 
 const { Meta } = Card;
 const { Title, Text } = Typography;
@@ -37,7 +36,13 @@ export const ItemSummary: FC<Props> = ({ item }) => {
         itemApi.buyItem(buy).then(res => {
             setDisable(true);
             setBuying(false);
-            buyItemMessage(res, item.name, () => setDisable(false));
+
+            if (res.result === 0) {
+                message.success(res.message);
+            }
+            else {
+                message.error(res.message);
+            }
         })
     }
     return (

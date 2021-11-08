@@ -7,6 +7,7 @@ import { OpenIdCallBack } from "../models/openIdCallBack";
 import { logout } from "../store/utils";
 import { LoginInfoCache } from "./cacheUtil";
 import { SelectOptionModel } from '../models/selectOption'
+import { BuyResultModel } from '../models/buyResult'
 
 
 const openIdCallback = (openIdInfo: OpenIdCallBack): Promise<LoginInfo> => {
@@ -40,8 +41,8 @@ const getActivityItems = (actId: number): Promise<ItemModel[]> => {
 }
 
 
-const buyItem = (buy: BuyModel): Promise<string> => {
-    return post('/api/Sell/BuyItem', buy).then(res => res.text());
+const buyItem = (buy: BuyModel): Promise<BuyResultModel> => {
+    return post('/api/Sell/BuyItem', buy).then(res => res.json()).then(res => res as BuyResultModel);
 }
 
 const getMyBought = (actId: number): Promise<BoughtModel[]> => {
